@@ -17,3 +17,16 @@ export const login = async (
     });
     return res.data;
 }   
+
+export const signup = async (
+    name: string,
+    email: string,
+    password: string
+): Promise<LoginResponse> => {
+    const res = await api.post<LoginResponse>("/auth/signup", {
+        name,
+        email,
+        password
+    });
+    return res.data;
+}

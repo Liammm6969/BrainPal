@@ -38,7 +38,7 @@ export default function Login() {
   })
 
   const onSubmit = async (values: LoginFormValues) => {
-    setLoading(true),
+    setLoading(true);
     setError("");
 
     try {
@@ -63,7 +63,7 @@ export default function Login() {
 
       <CardContent>
         {error && (
-          <p className="mb-2 text-sm text-red-500"></p>
+          <p className="mb-2 text-sm text-red-500">{error}</p>
         )}
 
         <Form {...form}>
@@ -104,10 +104,10 @@ export default function Login() {
         </Form>
       </CardContent>
 
-      <CardFooter>
-        <p>
+      <CardFooter className="flex justify-center">
+        <p className="text-sm text-muted-foreground">
           Doesn't have an account?{" "}
-          <Link to="/signup" className="text-blue-500 underline">
+          <Link to="/signup" className="font-medium text-primary hover:underline">
             Sign up
           </Link>
         </p>
