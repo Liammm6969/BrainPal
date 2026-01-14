@@ -1,0 +1,19 @@
+import api from "../api/api";
+
+export interface LoginResponse {
+    _id: string,
+    name: string,
+    email: string,
+    token: string,
+}
+
+export const login = async (
+    email: string, 
+    password: string
+): Promise<LoginResponse> => {
+    const res = await api.post<LoginResponse>("/auth/login", {
+        email, 
+        password
+    });
+    return res.data;
+}   
