@@ -7,6 +7,13 @@ export interface LoginResponse {
     token: string,
 }
 
+export interface SignupResponse {
+    _id: string,
+    name: string,
+    email: string,
+    message: string,
+}
+
 export const login = async (
     email: string, 
     password: string
@@ -22,11 +29,31 @@ export const signup = async (
     name: string,
     email: string,
     password: string
-): Promise<LoginResponse> => {
-    const res = await api.post<LoginResponse>("/auth/signup", {
+): Promise<SignupResponse> => {
+    const res = await api.post<SignupResponse>("/auth/signup", {
         name,
         email,
         password
+    });
+    return res.data;
+}
+
+export const verifyOTP = async (
+    userId: string,
+    otp: string
+): Promise<{ message: string }> => {
+    const res = await api.post<{ message: string }>("/auth/verify-otp", {
+        userId,
+        otp
+    });
+    return res.data;
+}
+
+export const resendOTP = async (
+    userId: string
+): Promise<{ message: string }> => {
+    const res = await api.post<{ message: string }>("/auth/resend-otp", {
+        userId
     });
     return res.data;
 }

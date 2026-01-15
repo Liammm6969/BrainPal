@@ -31,7 +31,12 @@ export const resetPasswordSchema = z
     path: ["confirmPassword"],
   });
 
+export const verifyOTPSchema = z.object({
+  otp: z.string().length(6, "OTP must be 6 digits").regex(/^\d+$/, "OTP must contain only numbers"),
+});
+
 export type LoginFormValues = z.infer<typeof loginSchema>;
 export type SignupFormValues = z.infer<typeof signupSchema>;
 export type ForgotPasswordFormValues = z.infer<typeof forgotPasswordSchema>;
 export type ResetPasswordFormValues = z.infer<typeof resetPasswordSchema>;
+export type VerifyOTPFormValues = z.infer<typeof verifyOTPSchema>;

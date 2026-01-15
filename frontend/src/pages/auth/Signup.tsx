@@ -21,6 +21,7 @@ import { Input } from "@/components/ui/input";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { PasswordInput } from "@/components/ui/password-input";
+import { useState } from "react";
 
 import { signupSchema, type SignupFormValues } from "@/schemas/auth.schema";
 import { signup } from "../../services/auth/authService";
@@ -36,22 +37,30 @@ export default function Signup() {
     },
   });
 
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
   const onSubmit = async (values: SignupFormValues) => {
-  try {
-    const { confirm, ...payload } = values;
+    setLoading(true);
+    setError("");
 
-    const data = await signup(
-      payload.name,
-      payload.email,
-      payload.password
-    );
+    try {
+      const { confirm, ...payload } = values;
 
-    localStorage.setItem("token", data.token);
-    navigate("/");
-  } catch (err: any) {
-    console.error(err.response?.data?.message || "Signup failed");
-  }
-};
+      const data = await signup(
+        payload.name,
+        payload.email,
+        payload.password
+      );
+
+      // Redirect to OTP verification page with userId
+      navigate(`/verify-otp?userId=${data._id}`);
+    } catch (err: any) {
+      setError(err.response?.data?.message || "Signup failed");
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <Card className="w-full max-w-sm">
       <CardHeader>
@@ -59,6 +68,9 @@ export default function Signup() {
         <CardDescription>Create a new account</CardDescription>
       </CardHeader>
       <CardContent>
+        {error && (
+          <p className="mb-4 text-sm text-red-500">{error}</p>
+        )}
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
@@ -101,6 +113,7 @@ export default function Signup() {
               )}
             ></FormField>
             <FormField
+              control={form.control}
               name="confirm"
               render={({ field }) => (
                 <FormItem>
@@ -116,8 +129,8 @@ export default function Signup() {
               )}
             ></FormField>
 
-            <Button type="submit" className="w-full">
-              Sign Up
+            <Button type="submit" disabled={loading} className="w-full">
+              {loading ? "Creating account..." : "Sign Up"}
             </Button>
           </form>
         </Form>
