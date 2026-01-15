@@ -92,6 +92,12 @@ export default function Login() {
                   <Input type="password" placeholder="********" {...field}/>
                 </FormControl>
                 <FormMessage/>
+                <Link 
+                    to="/forgot-password" 
+                    className="text-sm text-primary hover:underline flex justify-end"
+                  >
+                    Forgot password?
+                  </Link>
               </FormItem>
             )}
             />

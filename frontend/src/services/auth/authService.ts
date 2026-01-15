@@ -30,3 +30,20 @@ export const signup = async (
     });
     return res.data;
 }
+
+export const forgotPassword = async (email: string): Promise<{ message: string }> => {
+    const res = await api.post<{ message: string }>("/auth/forgot-password", {
+        email
+    });
+    return res.data;
+}
+
+export const resetPassword = async (
+    token: string,
+    newPassword: string
+): Promise<{ message: string }> => {
+    const res = await api.post<{ message: string }>(`/auth/reset-password/${token}`, {
+        newPassword
+    });
+    return res.data;
+}
