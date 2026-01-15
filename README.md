@@ -1,1 +1,1 @@
-# StudyBuddyApp
+# BrainPal
