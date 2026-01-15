@@ -8,6 +8,8 @@ const morgan = require("morgan");
 const authRoutes = require("./routes/auth.routes");
 const { errorHandler } = require("./middleware/error.middleware");
 
+const fileRoutes = require("./routes/file.routes");
+
 const app = express();
 
 app.use(cors());
@@ -18,6 +20,11 @@ app.use(morgan("dev"))
 app.use(passport.initialize());
 
 app.use("/api/auth", authRoutes);
+
+app.use("/api/files", 
+  passport.authenticate("jwt", { session: false }), 
+  fileRoutes
+);
 
 app.use(errorHandler);
 
