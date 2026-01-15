@@ -2,14 +2,24 @@ import { z } from "zod";
 
 export const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+  password: z.string()
+  .min(8)
+  .regex(/[A-Z]/, "Must contain uppercase")
+  .regex(/[0-9]/, "Must contain number")
+  .regex(/[^a-zA-Z0-9]/, "Must contain symbol")
+  .min(6, "Password must be at least 6 characters"),
 });
 
 export const signupSchema = z
   .object({
     name: z.string().min(2, "Name must be at least 2 characters"),
     email: z.string().email("Invalid email address"),
-    password: z.string().min(6, "Password must be at least 6 characters"),
+    password: z.string().min(6, "Password must be at least 6 characters")
+    .min(8)
+    .regex(/[A-Z]/, "Must contain uppercase")
+    .regex(/[0-9]/, "Must contain number")
+    .regex(/[^a-zA-Z0-9]/, "Must contain symbol")
+    .min(6, "Password must be at least 6 characters"),
     confirm: z.string().min(6, "Please confirm your password"),
   })
   .refine((data) => data.password === data.confirm, {

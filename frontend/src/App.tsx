@@ -4,7 +4,9 @@ import Signup from "@/pages/auth/Signup";
 import ResetPassword from "./pages/auth/ResetPassword";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import VerifyOTP from "./pages/auth/VerifyOTP";
+import StudentDashboard from "./pages/Student/StudentDashboard";
 
+import ProtectedRoute from "./routes/ProtectedRoutes";
 function App() {
   return (
     <div className="min-h-screen flex items-center justify-center">
@@ -14,6 +16,8 @@ function App() {
       <Route path="/verify-otp" element={<VerifyOTP />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password/:token" element={<ResetPassword />} />
+
+      <Route path="/student-dashboard" element={<ProtectedRoute><StudentDashboard /></ProtectedRoute>} />
     </Routes>
     </div>
   );

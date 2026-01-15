@@ -22,12 +22,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, type LoginFormValues } from "@/schemas/auth.schema";
 import { useForm } from "react-hook-form";
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { PasswordInput } from "@/components/ui/password-input";
 
 export default function Login() {
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
   const [error, setError] = useState("");
 
   const form = useForm<LoginFormValues>({
@@ -46,6 +47,7 @@ export default function Login() {
       const data = await login(values.email, values.password);
 
       localStorage.setItem("token", data.token);
+      navigate("/student-dashboard");
       console.log("Login successful: ", data);
     } catch (err: any) {
       setError(err.response?.data?.message || "Login failed.");
