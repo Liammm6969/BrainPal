@@ -24,6 +24,7 @@ import { useForm } from "react-hook-form";
 
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import { PasswordInput } from "@/components/ui/password-input";
 
 export default function Login() {
   const [loading, setLoading] = useState(false);
@@ -89,7 +90,7 @@ export default function Login() {
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input type="password" placeholder="********" {...field}/>
+                  <PasswordInput placeholder="********" {...field}/>
                 </FormControl>
                 <FormMessage/>
                 <Link 

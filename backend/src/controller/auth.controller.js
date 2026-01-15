@@ -55,7 +55,7 @@ exports.forgotPassword = async (req, res, next) => {
       expiresIn: "15m",
     });
 
-    const clientUrl = (process.env.CLIENT_URL || 'http://localhost:5173').replace(/\/$/, '');
+    const clientUrl = (process.env.CLIENT_URL).replace(/\/$/, '');
     const resetUrl = `${clientUrl}/reset-password/${resetToken}`;
 
     try {

@@ -20,6 +20,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { PasswordInput } from "@/components/ui/password-input";
 
 import { signupSchema, type SignupFormValues } from "@/schemas/auth.schema";
 import { signup } from "../../services/auth/authService";
@@ -93,7 +94,7 @@ export default function Signup() {
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input type="password" placeholder="********" {...field} />
+                    <PasswordInput placeholder="********" {...field} />
                   </FormControl>
                   <FormMessage/>
                 </FormItem>
@@ -103,9 +104,9 @@ export default function Signup() {
               name="confirm"
               render={({ field }) => (
                 <FormItem>
+                    <FormLabel>Confirm Password</FormLabel>
                   <FormControl>
-                    <Input
-                      type="password"
+                    <PasswordInput
                       placeholder="Confirm Password"
                       {...field}
                     />
@@ -124,7 +125,7 @@ export default function Signup() {
       <CardFooter className="flex justify-center">
         <p className="text-sm text-muted-foreground">
           Already have an account?{" "}
-          <Link to="/login" className="font-medium text-primary hover:underline">
+          <Link to="/" className="font-medium text-primary hover:underline">
             Log in
           </Link>
         </p>
