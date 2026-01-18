@@ -5,6 +5,7 @@ import ResetPassword from "./pages/auth/ResetPassword";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import VerifyOTP from "./pages/auth/VerifyOTP";
 import StudentDashboard from "./pages/Student/StudentDashboard";
+import StudyMaterials from "./pages/Student/StudyMaterials";
 
 import ProtectedRoute from "./routes/ProtectedRoutes";
 function App() {
@@ -17,7 +18,8 @@ function App() {
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password/:token" element={<ResetPassword />} />
 
-      <Route path="/student-dashboard" element={<ProtectedRoute><StudentDashboard /></ProtectedRoute>} />
+      <Route path="/student/dashboard" element={<ProtectedRoute><StudentDashboard /></ProtectedRoute>} />
+      <Route path="/student/study-materials" element={<ProtectedRoute><StudyMaterials /></ProtectedRoute>} />
     </Routes>
     </div>
   );

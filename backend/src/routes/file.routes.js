@@ -4,10 +4,18 @@ const { upload, handleMulterError } = require("../middleware/upload.middleware")
 const File = require("../models/File.model");
 const asyncHandler = require("../utils/asyncHandler");
 
+const multerMiddleware = (req, res, next) => {
+  upload.single("file")(req, res, (err) => {
+    if (err) {
+      return handleMulterError(err, req, res, next);
+    }
+    next();
+  });
+};
+
 router.post(
   "/upload",
-  upload.single("file"),
-  handleMulterError,
+  multerMiddleware,
   asyncHandler(async (req, res) => {
     if (!req.file) {
       return res.status(400).json({ message: "No file uploaded" });

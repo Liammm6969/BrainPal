@@ -32,12 +32,19 @@ const storage = new CloudinaryStorage({
 });
 
 const fileFilter = (req, file, cb) => {
+  console.log("File upload attempt:", {
+    originalname: file.originalname,
+    mimetype: file.mimetype,
+    size: file.size,
+  });
+  
   if (ALLOWED_MIME_TYPES.includes(file.mimetype)) {
     cb(null, true);
   } else {
+    console.warn(`File type rejected: ${file.mimetype} for file ${file.originalname}`);
     cb(
       new Error(
-        `File type not allowed. Allowed types: ${ALLOWED_MIME_TYPES.join(", ")}`
+        `File type "${file.mimetype}" not allowed. Allowed types: PDF, Word, Excel, PowerPoint, TXT, CSV`
       ),
       false
     );
@@ -54,6 +61,13 @@ const upload = multer({
 });
 
 const handleMulterError = (err, req, res, next) => {
+  console.error("Upload error:", {
+    message: err.message,
+    code: err.code,
+    name: err.name,
+    stack: err.stack,
+  });
+  
   if (err instanceof multer.MulterError) {
     if (err.code === "LIMIT_FILE_SIZE") {
       return res.status(400).json({
@@ -65,15 +79,30 @@ const handleMulterError = (err, req, res, next) => {
         message: "Too many files. Only one file allowed per upload.",
       });
     }
+    if (err.code === "LIMIT_UNEXPECTED_FILE") {
+      return res.status(400).json({
+        message: "Unexpected file field. Use 'file' as the field name.",
+      });
+    }
     return res.status(400).json({
       message: `Upload error: ${err.message}`,
+      error: err.code,
     });
   }
+
   if (err) {
+    if (err.http_code || err.message?.includes("cloudinary")) {
+      console.error("Cloudinary error:", err);
+      return res.status(500).json({
+        message: "File upload service error. Please check Cloudinary configuration.",
+      });
+    }
+    
     return res.status(400).json({
       message: err.message || "File upload failed",
     });
   }
+  
   next();
 };
 
