@@ -310,16 +310,17 @@ const getFileIcon = (mimeType?: string) => {
         </div>
       </SidebarInset>
 
-      {/* Delete Confirmation Dialog */}
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent>
           <DialogHeader>
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-100">
-                <AlertTriangle className="h-5 w-5 text-red-600" />
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
+                <AlertTriangle className="h-6 w-6 text-red-600" />
               </div>
               <div>
+                <div className="text-lg font-medium mb-1">
                 <DialogTitle>Delete File</DialogTitle>
+                </div>
                 <DialogDescription>
                   Are you sure you want to delete this file? This action cannot be undone.
                 </DialogDescription>
