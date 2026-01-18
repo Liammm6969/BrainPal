@@ -8,10 +8,19 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
   Upload,
   FileText,
   Trash2,
   Download,
+  AlertTriangle,
 } from "lucide-react";
 import {
   SidebarInset,
@@ -27,6 +36,9 @@ const StudyMaterials = () => {
   const [uploading, setUploading] = useState(false);
   const [dragActive, setDragActive] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [fileToDelete, setFileToDelete] = useState<FileData | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     loadFiles();
@@ -83,15 +95,32 @@ const StudyMaterials = () => {
     }
   };
 
-  const handleDeleteFile = async (fileId: string) => {
+  const handleDeleteClick = (file: FileData) => {
+    setFileToDelete(file);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!fileToDelete) return;
+
+    setDeleting(true);
     try {
-      await deleteFile(fileId);
-      setFiles(prev => prev.filter(file => file._id !== fileId));
+      await deleteFile(fileToDelete._id);
+      setFiles(prev => prev.filter(file => file._id !== fileToDelete._id));
+      setDeleteDialogOpen(false);
+      setFileToDelete(null);
       alert("File deleted successfully!");
     } catch (error) {
       console.error("Failed to delete file:", error);
       alert("Failed to delete file. Please try again.");
+    } finally {
+      setDeleting(false);
     }
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteDialogOpen(false);
+    setFileToDelete(null);
   };
 
   const handleDrag = useCallback((e: React.DragEvent) => {
@@ -138,14 +167,20 @@ const StudyMaterials = () => {
     });
   };
 
-  const getFileIcon = (mimeType: string) => {
-    if (mimeType.includes('pdf')) return '📄';
-    if (mimeType.includes('word') || mimeType.includes('document')) return '📝';
-    if (mimeType.includes('spreadsheet') || mimeType.includes('excel')) return '📊';
-    if (mimeType.includes('presentation') || mimeType.includes('powerpoint')) return '📽️';
-    if (mimeType.includes('text') || mimeType.includes('csv')) return '📄';
-    return '📄';
-  };
+const getFileIcon = (mimeType?: string) => {
+  if (!mimeType) return '📄';
+
+  const type = mimeType.toLowerCase();
+
+  if (type.includes('pdf')) return '📄';
+  if (type.includes('word') || type.includes('document')) return '📝';
+  if (type.includes('spreadsheet') || type.includes('excel')) return '📊';
+  if (type.includes('presentation') || type.includes('powerpoint')) return '📽️';
+  if (type.includes('text') || type.includes('csv')) return '📄';
+
+  return '📄';
+};
+
 
   return (
     <SidebarProvider>
@@ -259,7 +294,7 @@ const StudyMaterials = () => {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handleDeleteFile(file._id)}
+                      onClick={() => handleDeleteClick(file)}
                       className="text-red-600 hover:text-red-700 hover:bg-red-50"
                     >
                       <Trash2 className="h-4 w-4" />
@@ -274,6 +309,56 @@ const StudyMaterials = () => {
           </div>
         </div>
       </SidebarInset>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-100">
+                <AlertTriangle className="h-5 w-5 text-red-600" />
+              </div>
+              <div>
+                <DialogTitle>Delete File</DialogTitle>
+                <DialogDescription>
+                  Are you sure you want to delete this file? This action cannot be undone.
+                </DialogDescription>
+              </div>
+            </div>
+          </DialogHeader>
+          {fileToDelete && (
+            <div className="py-4">
+              <div className="flex items-center gap-3 rounded-lg border border-gray-200 bg-gray-50 p-3">
+                <div className="text-2xl">{getFileIcon(fileToDelete.mimeType)}</div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium text-gray-900 truncate">
+                    {fileToDelete.filename}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    {formatFileSize(fileToDelete.size)}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={handleDeleteCancel}
+              disabled={deleting}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDeleteConfirm}
+              disabled={deleting}
+            >
+              {deleting ? "Deleting..." : "Delete"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </SidebarProvider>
   );
 };
