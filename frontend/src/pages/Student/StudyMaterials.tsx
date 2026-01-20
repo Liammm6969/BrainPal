@@ -166,7 +166,16 @@ const StudyMaterials = () => {
       minute: '2-digit'
     });
   };
-
+  
+  const viewFile = async (fileId: string) => {
+    try {
+      const file = await viewFile(fileId);
+      window.open(file.url, '_blank');
+    } catch (error) {
+      console.error("Failed to view file:", error);
+      alert("Failed to view file. Please try again.");
+    }
+  }
 const getFileIcon = (mimeType?: string) => {
   if (!mimeType) return '📄';
 
@@ -284,6 +293,13 @@ const getFileIcon = (mimeType?: string) => {
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => window.open(file.url, '_blank')}
+                    >
+                      View
+                    </Button>
                     <Button
                       variant="outline"
                       size="sm"

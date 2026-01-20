@@ -6,6 +6,7 @@ import ForgotPassword from "./pages/auth/ForgotPassword";
 import VerifyOTP from "./pages/auth/VerifyOTP";
 import StudentDashboard from "./pages/Student/StudentDashboard";
 import StudyMaterials from "./pages/Student/StudyMaterials";
+import Notes from "./pages/Student/Notes";
 
 import ProtectedRoute from "./routes/ProtectedRoutes";
 function App() {
@@ -20,6 +21,7 @@ function App() {
 
       <Route path="/student/dashboard" element={<ProtectedRoute><StudentDashboard /></ProtectedRoute>} />
       <Route path="/student/study-materials" element={<ProtectedRoute><StudyMaterials /></ProtectedRoute>} />
+      <Route path="/student/notes" element={<ProtectedRoute><Notes /></ProtectedRoute>} />
     </Routes>
     </div>
   );

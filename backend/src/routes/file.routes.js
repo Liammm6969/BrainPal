@@ -8,6 +8,7 @@ const {
   uploadFile,
   getUserFiles,
   deleteFile,
+  viewFile,
 } = require("../controller/file.controller");
 const multerMiddleware = (req, res, next) => {
   upload.single("file")(req, res, (err) => {
@@ -34,4 +35,8 @@ router.delete(
   asyncHandler(deleteFile)
 );
 
+router.get(
+  "/view/:id",
+  asyncHandler(viewFile)
+);
 module.exports = router;

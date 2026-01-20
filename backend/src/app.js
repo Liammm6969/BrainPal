@@ -7,7 +7,7 @@ const cors = require("cors");
 const morgan = require("morgan");
 const authRoutes = require("./routes/auth.routes");
 const { errorHandler } = require("./middleware/error.middleware");
-
+const aiROutes = require("./routes/ai.routes");
 const fileRoutes = require("./routes/file.routes");
 
 const app = express();
@@ -26,6 +26,7 @@ app.use("/api/files",
   fileRoutes
 );
 
+app.use("/api/ai", aiROutes);
 app.use(errorHandler);
 
 module.exports = app;

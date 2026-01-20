@@ -5,6 +5,7 @@ import {
   BarChart3,
   Settings,
   LogOut,
+  NotebookPen,
 } from "lucide-react";
 import {
   Sidebar,
@@ -58,6 +59,18 @@ const StudentSidebar = () => {
                   <Link to="/student/study-materials">
                     <BookOpen />
                     <span>Study Materials</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={location.pathname === "/student/notes"}
+                  tooltip="Notes"
+                >
+                  <Link to="/student/notes">
+                    <NotebookPen />
+                    <span>Notes</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

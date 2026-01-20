@@ -47,7 +47,7 @@ export default function Login() {
       const data = await login(values.email, values.password);
 
       localStorage.setItem("token", data.token);
-      navigate("/student-dashboard");
+      navigate("/student/dashboard");
       console.log("Login successful: ", data);
     } catch (err: any) {
       setError(err.response?.data?.message || "Login failed.");

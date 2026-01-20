@@ -1,4 +1,4 @@
-const File = require('../models/File');
+const File = require('../models/File.model');
 const cloudinary = require('cloudinary').v2;
 
 // Upload file
@@ -60,3 +60,26 @@ const deleteFile = async (req, res) => {
   }
 };module.exports = { uploadFile, getUserFiles, deleteFile };
 
+// View file
+const viewFile = async (req, res) => {
+  try {
+    const fileId = req.params.id;
+    const userId = req.user.id;
+
+    // Find the file to get the public_id
+    const file = await File.findOne({ _id: fileId, user: userId });
+    if (!file) {
+      return res.status(404).json({ message: 'File not found' });
+    }
+
+    // Generate a temporary URL from Cloudinary
+    const url = cloudinary.url(file.publicId, { secure: true });
+
+    res.json({ url });
+  } catch (error) {
+    console.error('View error:', error);
+    res.status(500).json({ message: 'Failed to view file' });
+  }
+};
+
+module.exports = { uploadFile, getUserFiles, deleteFile, viewFile };
