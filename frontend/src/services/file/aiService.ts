@@ -5,7 +5,18 @@ export const askAI = async (question: string): Promise<string> => {
   return res.data.answer;
 };
 
-export const summarizeText = async (text: string): Promise<string> => {
-  const res = await api.post<{ summary: string }>("/ai/summarize", { text });
+interface SummarizeFilePayload {
+  filename: string;
+  url: string;
+}
+
+export const summarizeFiles = async (
+  files: SummarizeFilePayload[],
+  instructions: string
+): Promise<string> => {
+  const res = await api.post<{ summary: string }>("/ai/summarize", {
+    files,
+    instructions,
+  });
   return res.data.summary;
 };

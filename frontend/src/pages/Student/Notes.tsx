@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Card,
   CardContent,
@@ -16,7 +16,7 @@ import {
 import StudentSidebar from "@/components/shared/StudentSidebar";
 import { getUserFiles } from "@/services/file/fileService";
 import type { FileData } from "@/services/file/fileService";
-import { summarizeText } from "@/services/file/aiService";
+import { summarizeFiles } from "@/services/file/aiService";
 import {
   FileText,
   Loader2,
@@ -74,18 +74,15 @@ const Notes = () => {
     setError(null);
     setNotes("");
 
-    const prompt = [
-      "Generate concise, well-structured study notes using these files:",
-      ...selectedFiles.map(
-        (file, index) => `${index + 1}. ${file.filename}`
-      ),
-      instructions
-        ? `Additional context or focus areas: ${instructions}`
-        : "Focus on key concepts, definitions, and actionable takeaways.",
-    ].join("\n");
-
     try {
-      const summary = await summarizeText(prompt);
+      const summary = await summarizeFiles(
+        selectedFiles.map((file) => ({
+          filename: file.filename,
+          url: file.url,
+        })),
+        instructions
+      );
+
       setNotes(summary);
     } catch (err: any) {
       console.error("Failed to generate notes:", err);
@@ -94,6 +91,7 @@ const Notes = () => {
       setGenerating(false);
     }
   };
+
 
   return (
     <SidebarProvider>
@@ -106,123 +104,124 @@ const Notes = () => {
           </div>
         </header>
 
-        <div className="flex flex-1 flex-col gap-4 p-4 pt-6">
-          <div className="max-w-6xl mx-auto w-full space-y-6">
-            <Card>
-              <CardHeader className="flex justify-between md:flex-row md:items-center gap-4">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <NotebookPen className="h-5 w-5 text-primary" />
-                    <CardTitle>Generate notes from your uploads</CardTitle>
+        <div className="flex flex-1 gap-4 p-4 pt-6 overflow-hidden">
+          <div className="flex-1 overflow-y-auto">
+            <div className="max-w-4xl mx-auto w-full">
+              <Card>
+                <CardHeader className="flex justify-between md:flex-row md:items-center gap-4">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <NotebookPen className="h-5 w-5 text-primary" />
+                      <CardTitle>Generate notes from your uploads</CardTitle>
+                    </div>
+                    <CardDescription>
+                      Pick uploaded files, add optional instructions, and let the AI draft notes.
+                    </CardDescription>
                   </div>
-                  <CardDescription>
-                    Pick uploaded files, add optional instructions, and let the AI draft notes.
-                  </CardDescription>
-                </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={loadFiles}
-                  disabled={loadingFiles}
-                  className="gap-2"
-                >
-                  <RefreshCcw className="h-4 w-4" />
-                  Refresh files
-                </Button>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <p className="text-sm text-muted-foreground">
-                      {loadingFiles
-                        ? "Loading your files..."
-                        : `${files.length} file${files.length === 1 ? "" : "s"} available`}
-                    </p>
-                    <p className="text-sm font-medium">
-                      Selected: {selectedFiles.length}
-                    </p>
-                  </div>
-
-                  <div className="space-y-2">
-                    {loadingFiles ? (
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                        Fetching files...
-                      </div>
-                    ) : files.length === 0 ? (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={loadFiles}
+                    disabled={loadingFiles}
+                    className="gap-2"
+                  >
+                    <RefreshCcw className="h-4 w-4" />
+                    Refresh files
+                  </Button>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
                       <p className="text-sm text-muted-foreground">
-                        No files uploaded yet. Upload study materials first in Study Materials.
+                        {loadingFiles
+                          ? "Loading your files..."
+                          : `${files.length} file${files.length === 1 ? "" : "s"} available`}
                       </p>
-                    ) : (
-                      <div className="divide-y rounded-lg border">
-                        {files.map((file) => (
-                          <label
-                            key={file._id}
-                            className="flex items-start gap-3 p-3 hover:bg-muted/60 cursor-pointer"
-                          >
-                            <input
-                              type="checkbox"
-                              className="mt-1 h-4 w-4"
-                              checked={selectedIds.includes(file._id)}
-                              onChange={() => toggleSelection(file._id)}
-                            />
-                            <div className="flex flex-col gap-1">
-                              <div className="flex items-center gap-2">
-                                <FileText className="h-4 w-4 text-primary" />
-                                <span className="font-medium">{file.filename}</span>
-                              </div>
-                              <span className="text-xs text-muted-foreground break-all">
-                                {file.url}
-                              </span>
-                            </div>
-                          </label>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
+                      <p className="text-sm font-medium">
+                        Selected: {selectedFiles.length}
+                      </p>
+                    </div>
 
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2">
-                    <Sparkles className="h-4 w-4 text-primary" />
-                    <h3 className="font-semibold text-sm">Additional instructions (optional)</h3>
-                  </div>
-                  <Textarea
-                    placeholder="E.g., focus on chapter 3, highlight formulas, keep bullets short..."
-                    value={instructions}
-                    onChange={(e) => setInstructions(e.target.value)}
-                    className="min-h-[120px]"
-                  />
-                </div>
-
-                <div className="flex flex-col gap-2">
-                  {error && <p className="text-sm text-red-600">{error}</p>}
-                  <div className="flex items-center gap-3">
-                    <Button
-                      onClick={handleGenerateNotes}
-                      disabled={generating || loadingFiles}
-                      className="gap-2"
-                    >
-                      {generating ? (
-                        <>
+                    <div className="space-y-2">
+                      {loadingFiles ? (
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
                           <Loader2 className="h-4 w-4 animate-spin" />
-                          Generating...
-                        </>
+                          Fetching files...
+                        </div>
+                      ) : files.length === 0 ? (
+                        <p className="text-sm text-muted-foreground">
+                          No files uploaded yet. Upload study materials first in Study Materials.
+                        </p>
                       ) : (
-                        <>
-                          <Sparkles className="h-4 w-4" />
-                          Generate Notes
-                        </>
+                        <div className="divide-y rounded-lg border">
+                          {files.map((file) => (
+                            <label
+                              key={file._id}
+                              className="flex items-start gap-3 p-3 hover:bg-muted/60 cursor-pointer"
+                            >
+                              <input
+                                type="checkbox"
+                                className="mt-1 h-4 w-4"
+                                checked={selectedIds.includes(file._id)}
+                                onChange={() => toggleSelection(file._id)}
+                              />
+                              <div className="flex flex-col gap-1">
+                                <div className="flex items-center gap-2">
+                                  <FileText className="h-4 w-4 text-primary" />
+                                  <span className="font-medium">{file.filename}</span>
+                                </div>
+                              </div>
+                            </label>
+                          ))}
+                        </div>
                       )}
-                    </Button>
+                    </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
 
-            <Card>
-              <GeneratedNotesCard notes={notes} loading={generating} />
-            </Card>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <Sparkles className="h-4 w-4 text-primary" />
+                      <h3 className="font-semibold text-sm">Additional instructions (optional)</h3>
+                    </div>
+                    <Textarea
+                      placeholder="E.g., focus on chapter 3, highlight formulas, keep bullets short..."
+                      value={instructions}
+                      onChange={(e) => setInstructions(e.target.value)}
+                      className="min-h-[120px]"
+                    />
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    {error && <p className="text-sm text-red-600">{error}</p>}
+                    <div className="flex items-center gap-3">
+                      <Button
+                        onClick={handleGenerateNotes}
+                        disabled={generating || loadingFiles}
+                        className="gap-2"
+                      >
+                        {generating ? (
+                          <>
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            Generating...
+                          </>
+                        ) : (
+                          <>
+                            <Sparkles className="h-4 w-4" />
+                            Generate Notes
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+
+          <div className="w-96 border-l overflow-y-auto">
+            <div className="sticky top-0 p-4">
+                <GeneratedNotesCard notes={notes} loading={generating} />
+            </div>
           </div>
         </div>
       </SidebarInset>

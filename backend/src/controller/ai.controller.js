@@ -1,4 +1,4 @@
-const { askStudyAI, summarizeText } = require("../services/ai.service.js");
+const { askStudyAI, summarizeFiles } = require("../services/ai.service.js");
 
 const askAI = async (req, res) => {
   const { question } = req.body;
@@ -17,18 +17,16 @@ const askAI = async (req, res) => {
 };
 
 const summarize = async (req, res) => {
-  const { text } = req.body;
-
-  if (!text?.trim()) {
-    return res.status(400).json({ message: "Text is required for summarization" });
-  }
-
   try {
-    const summary = await summarizeText(text);
-    res.status(200).json({ summary });
+    const files = req.body.files;
+    const instructions = req.body.instructions || "";
+
+    const summary = await summarizeFiles(files, instructions);
+
+    res.json({ summary });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Summarization failed" });
+    console.error("AI Summarize Error:", error.message || error);
+    res.status(500).json({ message: "Failed to generate notes" });
   }
 };
 
